@@ -130,7 +130,8 @@ public final class QRCodeReader: NSObject, AVCaptureMetadataOutputObjectsDelegat
 
     super.init()
 
-    sessionQueue.async {
+    sessionQueue.async {[weak self] in
+      guard let self = self else { return }
       self.configureDefaultComponents(withCaptureDevicePosition: captureDevicePosition)
     }
   }
@@ -199,9 +200,9 @@ public final class QRCodeReader: NSObject, AVCaptureMetadataOutputObjectsDelegat
    *Notes: if `stopScanningWhenCodeIsFound` is sets to true (default behaviour), each time the scanner found a code it calls the `stopScanning` method.*
    */
   public func startScanning() {
-    sessionQueue.async {
-      guard !self.session.isRunning else { return }
-
+    sessionQueue.async {[weak self] in
+      guard let self = self, !self.session.isRunning else { return }
+      
       self.session.startRunning()
 
       DispatchQueue.main.async {
@@ -212,8 +213,8 @@ public final class QRCodeReader: NSObject, AVCaptureMetadataOutputObjectsDelegat
 
   /// Stops scanning the codes.
   public func stopScanning() {
-    sessionQueue.async {
-      guard self.session.isRunning else { return }
+    sessionQueue.async {[weak self] in
+      guard let self = self, self.session.isRunning else { return }
 
       self.session.stopRunning()
 
